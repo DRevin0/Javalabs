@@ -1,0 +1,19 @@
+# Compiled class files
+*.class
+
+# IDE files
+*.iml
+.idea/
+*.iws
+
+# Build directories
+target/
+build/
+out/
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
