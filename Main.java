@@ -18,7 +18,7 @@ public class Main {
             System.out.println(t.toString());
 
         // Обновляем статус одной задачи
-        manager.updateTask(task1.getId(), "IN_PROGRESS", "HIGH");
+        manager.updateTask(task1.getId(), Task.Status.IN_PROGRESS, Task.Priority.HIGH);
 
         System.out.println("\nОбновленные задачи:");
         for (Task t : manager.getAllTasks())

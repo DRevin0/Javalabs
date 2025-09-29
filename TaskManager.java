@@ -33,11 +33,17 @@ public void saveToFile(){
         return new ArrayList<>(tasks);
     }
 
-    public ArrayList<Task> getTasksByStatus(String status) {
+    public ArrayList<Task> getTasksByStatus(String statusStr) {
         ArrayList<Task> result = new ArrayList<>();
-        for (Task t : tasks) {
-            if (t.getStatus().equalsIgnoreCase(status))
-                result.add(t);
+        try {
+            Task.Status status = Task.Status.valueOf(statusStr.toUpperCase());
+            for (Task t : tasks) {
+                if (t.getStatus() == status){
+                    result.add(t);
+                }
+            }
+        } catch(IllegalArgumentException e){
+            System.err.println("Задача с таким статусом не найдена: "+statusStr);
         }
         return result;
     }
@@ -51,11 +57,17 @@ public void saveToFile(){
         return result;
     }
 
-    public ArrayList<Task> getTasksByPriority(String priority) {
+    public ArrayList<Task> getTasksByPriority(String priorityStr) {
         ArrayList<Task> result = new ArrayList<>();
-        for (Task t : tasks) {
-            if (t.getPriority().equalsIgnoreCase(priority))
-                result.add(t);
+        try {
+            Task.Priority priority = Task.Priority.valueOf(priorityStr.toUpperCase());
+            for (Task t : tasks) {
+                if (t.getPriority() == priority){
+                    result.add(t);
+                }
+            }
+        } catch(IllegalArgumentException e){
+            System.err.println("Задача с таким приоритетом не найдена: "+priorityStr);
         }
         return result;
     }
@@ -65,14 +77,14 @@ public void saveToFile(){
         LocalDateTime now = LocalDateTime.now();
         for (Task t : tasks) {
             if (t.getDueDate() != null && t.getDueDate().isBefore(now) &&
-               !"DONE".equalsIgnoreCase(t.getStatus()))
+               t.getStatus() != Task.Status.COMPLETED)
                 result.add(t);
         }
         return result;
     }
 
 //Редактирование задачи
-    public boolean updateTask(int id, String newStatus, String newPriority) {
+    public boolean updateTask(int id, Task.Status newStatus, Task.Priority newPriority) {
         Task t = getTaskById(id);
         if (t != null) {
             t.setStatus(newStatus);
