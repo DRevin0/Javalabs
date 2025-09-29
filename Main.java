@@ -3,14 +3,15 @@ public class Main {
         TaskManager manager = new TaskManager();
 
         // Создание нескольких задач
-        Task task1 = new Task("Купить продукты");
-        Task task2 = new Task("Посмотреть фильм");
-        Task task3 = new Task("Позвонить маме");
+        Task task1 = new Task("Купить молоко");
+        Task task2 = new Task("Посмотреть мультик");
+        Task task3 = new Task("Позвонить папе");
 
         // Добавляем задачи в менеджер
         manager.addTask(task1);
         manager.addTask(task2);
         manager.addTask(task3);
+        manager.saveToFile();
 
         System.out.println("\nВсе задачи:");
         for (Task t : manager.getAllTasks())

@@ -3,18 +3,23 @@ import java.util.ArrayList;
 import java.util.Comparator;
 public class TaskManager {
     private ArrayList<Task> tasks;
+    private Filehandler fileHandler;
     private int nextId;
 
     public TaskManager() {
-        this.tasks = new ArrayList<>();
-        this.nextId = 1;
+        this.fileHandler = new Filehandler();
+        this.tasks = fileHandler.loadTasks();
+        this.nextId = tasks.size()+1;
     }
 //Создание задачи
     public void addTask(Task t) {
         t.setId(nextId++); 
         tasks.add(t);
     }
-
+//Ручное сохранение всех задач в файл
+public void saveToFile(){
+    fileHandler.saveTasks(tasks);
+}
 //Методы поиска задачи
     public Task getTaskById(int id) {
         for (Task t : tasks) {
