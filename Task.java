@@ -1,27 +1,54 @@
 import java.io.Serializable;
 import java.time.LocalDateTime;
+/**
+ * Класс представляет задачу в системе управления задачами(TO-DO-LIST).
+ * Содержит основную информацию о задаче: идентификатор, заголовок, описание,
+ * даты создания и выполенения, приоритет и статус.
+ * 
+ * @author Ревин Дмитрий 
+ * @version 1.0
+ * @since 2025
+*/
 public class Task implements Serializable {
+    /**
+     * Уникальный идентификатор задачи. Генерируется автоматически при создании.
+    */
     private int id;
+    /**
+     * Краткое название задачи. Не может быть null или пустым.
+     */
     private String title;
-    private LocalDateTime creationDate;
-    private LocalDateTime dueDate;
-    private Priority priority;
-    private Status status;
 
+    /** Дата создания (автоматически) */
+    private final LocalDateTime creationDate;
+    
+    /** Срок выполнения (опционально) */
+    private LocalDateTime dueDate;
+    
+    /** Уровень важности */
+    private Priority priority;
+    
+    /** Текущий статус */
+    private Status status;
+    
+    /** Набор вариантов приоритетов задачи */
     public enum Priority {
         LOW,
         MEDIUM,
         HIGH
     }
+    /** Набор вариантов статусов задачи */
     public enum Status {
         NEW,
         IN_PROGRESS,
         COMPLETED
     }
-
-
-
-    // Конструктор задачи с минимальным набором полей
+    /**
+     * Создает новую задачу с указанным заголовком.
+     * Автмоматически устанавливает дату создания, приоритет "LOW" и статус "NEW".
+     * 
+     * @param title заголовок задачи, не может быть null или пустым
+     */
     public Task(String title) {
         this.title = title;
         this.creationDate = LocalDateTime.now();
@@ -29,7 +56,7 @@ public class Task implements Serializable {
         this.status = Status.NEW;
     }
 
-    // Геттеры
+
     public int getId() {
         return id;
     }

@@ -1,13 +1,27 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+/**
+ * Основной класс для управления задачами.
+ * Обеспечивает создание, поиск, редактирование, удаление и сортировку задач.
+ * Автоматически загружает задачи из файла при создании и предоставляет 
+ * методы для ручного сохранения изменений.
+ * 
+ * @author Ревин Дмитрий
+ * @version 1.0
+ * @see Task
+ * @see FileHandler
+ */
 public class TaskManager {
-    private ArrayList<Task> tasks;
-    private Filehandler fileHandler;
+    private final ArrayList<Task> tasks;
+    private final FileHandler fileHandler;
     private int nextId;
-
+    /**
+     * Создает новый менеджер задач.
+     * Автоматически загружает задачи из файла и инициализирует счетчик ID.
+     */
     public TaskManager() {
-        this.fileHandler = new Filehandler();
+        this.fileHandler = new FileHandler();
         this.tasks = fileHandler.loadTasks();
         this.nextId = tasks.size()+1;
     }
@@ -49,6 +63,7 @@ public void saveToFile(){
     }
 
     public ArrayList<Task> getTasksByTitle(String title) {
+        if(title == null) return new ArrayList<>();
         ArrayList<Task> result = new ArrayList<>();
         for (Task t : tasks) {
             if (t.getTitle().equalsIgnoreCase(title))
@@ -71,7 +86,9 @@ public void saveToFile(){
         }
         return result;
     }
-
+    /**
+     * Возвращает просроченные задачи(срок прошел, но статус не completed)
+     */
     public ArrayList<Task> getOverdueTasks() {
         ArrayList<Task> result = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
@@ -113,16 +130,18 @@ public void saveToFile(){
 
     public ArrayList<Task> getTasksSortedByDueDate() {
         ArrayList<Task> sorted = new ArrayList<>(tasks);
-        sorted.sort(Comparator.comparing(Task::getDueDate));
+        sorted.sort(Comparator.comparing(Task::getDueDate,
+            Comparator.nullsLast(Comparator.naturalOrder())));
         return sorted;
     }
 
 //Удаление задачи 
     public boolean removeTaskById(int id) {
-        Task toRemove = getTaskById(id);
-        if (toRemove != null) {
-            tasks.remove(toRemove);
-            return true;
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getId() == id) {
+                tasks.remove(i); 
+                return true;
+            }
         }
         return false;
     }
