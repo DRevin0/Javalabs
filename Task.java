@@ -1,62 +1,53 @@
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 /**
- * Класс представляет задачу в системе управления задачами(TO-DO-LIST).
+ * Класс представляет задачу в системе управления задачами (TO-DO LIST).
  * Содержит основную информацию о задаче: идентификатор, заголовок, описание,
- * даты создания и выполенения, приоритет и статус.
+ * даты создания и выполнения, приоритет и статус.
  * 
  * @author Ревин Дмитрий 
  * @version 1.0
  * @since 2025
-*/
+ */
 public class Task implements Serializable {
-    /**
-     * Уникальный идентификатор задачи. Генерируется автоматически при создании.
-    */
+
+    /** Уникальный идентификатор задачи. Генерируется автоматически при создании. */
     private int id;
-    /**
-     * Краткое название задачи. Не может быть null или пустым.
-     */
+    
+    /** Краткое название задачи. Не может быть null или пустым. */
     private String title;
 
-    /** Дата создания (автоматически) */
+    /** Дата создания (автоматически). */
     private final LocalDateTime creationDate;
     
-    /** Срок выполнения (опционально) */
+    /** Срок выполнения (опционально). */
     private LocalDateTime dueDate;
     
-    /** Уровень важности */
+    /** Уровень важности. */
     private Priority priority;
     
-    /** Текущий статус */
+    /** Текущий статус. */
     private Status status;
     
-    /** Набор вариантов приоритетов задачи */
-    public enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
-    /** Набор вариантов статусов задачи */
-    public enum Status {
-        NEW,
-        IN_PROGRESS,
-        COMPLETED
-    }
     /**
      * Создает новую задачу с указанным заголовком.
-     * Автмоматически устанавливает дату создания, приоритет "LOW" и статус "NEW".
+     * Автоматически устанавливает дату создания, приоритет "LOW" и статус "NEW".
      * 
      * @param title заголовок задачи, не может быть null или пустым
+     * @throws IllegalArgumentException если заголовок null или пустой
      */
     public Task(String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Заголовок не может быть null или пустым");
+        }
         this.title = title;
         this.creationDate = LocalDateTime.now();
         this.priority = Priority.LOW; 
         this.status = Status.NEW;
     }
 
-
+    // Геттеры
     public int getId() {
         return id;
     }
@@ -108,4 +99,19 @@ public class Task implements Serializable {
     public String toString() {
         return "Задача №" + id + ": '" + title + "', статус: [" + status + "]";
     }
+    
+    /** Набор вариантов приоритетов задачи. */
+    public enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+    
+    /** Набор вариантов статусов задачи. */
+    public enum Status {
+        NEW,
+        IN_PROGRESS,
+        COMPLETED
+    }
 }
+
