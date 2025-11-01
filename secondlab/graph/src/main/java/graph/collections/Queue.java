@@ -1,5 +1,7 @@
 package collections;
 public class Queue<T>{
+    private static final int DEFAULT_CAPACITY = 10;
+
     private T[] array;
     private int head;
     private int tail;
@@ -9,10 +11,9 @@ public class Queue<T>{
         this.head = 0;
         this.tail = 0;
         this.size = 0;
-        this.capacity = 10;
+        this.capacity = DEFAULT_CAPACITY;
         this.array = (T[]) new Object[capacity];
     }
-
     public void enqueue(T element){
         if(size == capacity){
             T[] newArray = (T[]) new Object[capacity*2];
@@ -52,7 +53,4 @@ public class Queue<T>{
         }
         return false;
     }
-
-    
-
 }

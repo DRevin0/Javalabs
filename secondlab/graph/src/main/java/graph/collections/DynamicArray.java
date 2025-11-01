@@ -5,8 +5,8 @@ public class DynamicArray<T>{
     private int capacity;
     private T[] array;
 
-    public DynamicArray(){
-        this.capacity = 10;
+    public DynamicArray(int initialCapacity){
+        this.capacity = initialCapacity;
         this.size = 0;
         this.array = (T[]) new Object[capacity];
     }
