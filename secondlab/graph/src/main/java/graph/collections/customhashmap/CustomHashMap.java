@@ -138,4 +138,16 @@ public class CustomHashMap<K, V>{
         }
         return null;
     }
+    public DynamicArray<K> keySet(){
+        DynamicArray<K> allKeys = new DynamicArray<>(10);
+        
+        for (int i = 0; i < buckets.getSize(); i++) {
+            Entry<K, V> current = buckets.get(i);
+            while (current != null) {
+                allKeys.add(current.getKey());
+                current = current.getNext();
+            }
+        }
+        return allKeys;
+    }
 }

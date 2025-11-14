@@ -1,2 +1,6 @@
-import collections.Queue;
-import collections.customhashmap.CustomHashMap;
+import collections.*;
+import structures.*;
+public class Main {
+    
+}
+
