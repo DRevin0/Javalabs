@@ -86,10 +86,26 @@ public class Graph<V>{
         return adjVertices;
 
     }
-    void dfs(V start){
-
+    public int getVertexCount(){
+        return adjList.getSize();
     }
-    void bfs(V start){
-
+    public int getEdgeWeight(V from, V to){
+        if(from == null||to==null){
+            throw new InvalidVertexException("Vertices cannot be null");
+        }
+        if(!adjList.containsKey(from)){
+            throw new InvalidVertexException("Vertex "+from+" does not exist");
+        }
+        DynamicArray<Edge<V>> edges = adjList.get(from);
+        for (int i = 0; i < edges.getSize(); i++) {
+            Edge<V> edge = edges.get(i);
+            if (edge.getTo().equals(to)) {
+                return edge.getWeight();
+            }
+        }
+        throw new InvalidVertexException("No edge from " +from+ " to " +to);
+    }
+    public DynamicArray<V> getAllVertices(){
+        return adjList.keySet();
     }
 }
