@@ -1,12 +1,14 @@
 package collections;
 public class Queue<T>{
     private static final int DEFAULT_CAPACITY = 10;
+    private static final int RESIZE_FACTOR = 2;
 
     private T[] array;
     private int head;
     private int tail;
     private int size;
     private int capacity;
+    @SuppressWarnings("unchecked")
     public Queue(){
         this.head = 0;
         this.tail = 0;
@@ -14,15 +16,17 @@ public class Queue<T>{
         this.capacity = DEFAULT_CAPACITY;
         this.array = (T[]) new Object[capacity];
     }
+    @SuppressWarnings("unchecked")
     public void enqueue(T element){
         if(size == capacity){
-            T[] newArray = (T[]) new Object[capacity*2];
+            T[] newArray = (T[]) new Object[capacity*RESIZE_FACTOR];
             for(int i = 0; i< size;i++){
                 newArray[i] = array[(head+i)%capacity];
             }
             array = newArray;
             head = 0;
             tail = size;
+            capacity = capacity * RESIZE_FACTOR;
         }
         array[tail] = element;
         tail = (tail+1)%capacity;

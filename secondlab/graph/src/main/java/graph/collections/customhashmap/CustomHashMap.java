@@ -23,30 +23,24 @@ public class CustomHashMap<K, V>{
             return Math.abs(key.hashCode())%capacity;
         }
     }
-    public void rehash() {
+    public void rehash(){
+        DynamicArray<Entry<K, V>> oldBuckets = this.buckets;
         int oldCapacity = this.capacity;
         this.capacity *= 2;
 
-        DynamicArray<Entry<K, V>> newBuckets = new DynamicArray<Entry<K, V>>(this.capacity);
-        for (int i = 0; i < this.capacity; i++) {
-            newBuckets.add(null);
+        this.buckets = new DynamicArray<>(this.capacity);
+        for (int i = 0; i < this.capacity; i++){
+            this.buckets.add(null);
         }
+        this.size = 0;
         for (int i = 0; i < oldCapacity; i++) {
-            Entry<K, V> current = this.buckets.get(i);
-            while (current != null) {
+            Entry<K, V> current = oldBuckets.get(i);
+            while (current != null){
                 Entry<K, V> next = current.getNext();
-                
-                int newIndex = hash(current.getKey());
-
-                Entry<K, V> existingHead = newBuckets.get(newIndex);
-                current.setNext(existingHead);
-                newBuckets.set(newIndex, current);
-                
+                put(current.getKey(), current.getValue());
                 current = next;
             }
         }
-        
-        this.buckets = newBuckets;
     }
     public void put(K key, V value){
         if(key == null){
@@ -114,7 +108,7 @@ public class CustomHashMap<K, V>{
         }
         return false;
     }
-    public V remove(K key) {
+    public V remove(K key){
         if (key == null){
             return null;
         }
@@ -122,12 +116,12 @@ public class CustomHashMap<K, V>{
         Entry<K, V> current = buckets.get(index);
         Entry<K, V> prev = null;
         
-        while (current != null) {
-            if (current.getKey().equals(key)) {
+        while (current != null){
+            if (current.getKey().equals(key)){
                 if (prev == null) {
                     buckets.set(index, current.getNext());
                 } 
-                else {
+                else{
                     prev.setNext(current.getNext());
                 }
                 size--;

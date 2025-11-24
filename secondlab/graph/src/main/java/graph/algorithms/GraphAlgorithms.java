@@ -5,6 +5,8 @@ import collections.customhashmap.CustomHashMap;
 import exceptions.*;
 
 public class GraphAlgorithms {
+    private static final int DEFAULT_INITIAL_CAPACITY = 10;
+    private static final int INFINITY = Integer.MAX_VALUE;
 
     public static <V> DynamicArray<V> dfs(Graph<V> graph, V start){
         if(start == null){
@@ -12,8 +14,8 @@ public class GraphAlgorithms {
         }
         
         CustomHashMap<V, Boolean> visited = new CustomHashMap<>();
-        DynamicArray<V> stack = new DynamicArray<>(10);
-        DynamicArray<V> result = new DynamicArray<>(10);
+        DynamicArray<V> stack = new DynamicArray<>(DEFAULT_INITIAL_CAPACITY);
+        DynamicArray<V> result = new DynamicArray<>(DEFAULT_INITIAL_CAPACITY);
 
         stack.add(start);
 
@@ -25,7 +27,7 @@ public class GraphAlgorithms {
                 visited.put(v, true);
                 result.add(v);
 
-                DynamicArray<V> neighbors = graph.getAdjacent(v);
+                DynamicArray<V> neighbors = graph.getArrayAdjacent(v);
                 for (int i = neighbors.getSize() - 1; i >= 0; i--) {
                     V u = neighbors.get(i);
                     if (!visited.containsKey(u)) {
@@ -46,14 +48,14 @@ public class GraphAlgorithms {
 
         CustomHashMap<V, Boolean> visited = new CustomHashMap<>();
         Queue<V> q = new Queue<>();
-        DynamicArray<V> result = new DynamicArray<>(10);
+        DynamicArray<V> result = new DynamicArray<>(DEFAULT_INITIAL_CAPACITY);
         visited.put(start, true);
         q.enqueue(start);
         while(!q.isEmpty()){
             V v = q.dequeue();
             result.add(v);
 
-            DynamicArray<V> neighbors = graph.getAdjacent(v);
+            DynamicArray<V> neighbors = graph.getArrayAdjacent(v);
             for (int i = 0; i < neighbors.getSize(); i++) {
                 V u = neighbors.get(i);
                 if (!visited.containsKey(u)) {
@@ -74,13 +76,13 @@ public class GraphAlgorithms {
         DynamicArray<V> allVertices = graph.getAllVertices();
         for (int i = 0; i < allVertices.getSize(); i++) {
             V v = allVertices.get(i);
-            d.put(v, Integer.MAX_VALUE);
+            d.put(v, INFINITY);
         }
         d.put(start, 0);
 
         for (int i = 0; i < allVertices.getSize(); i++) {
             V u = null;
-            int minDist = Integer.MAX_VALUE;
+            int minDist = INFINITY;
             for (int j = 0; j < allVertices.getSize(); j++) {
                 V v = allVertices.get(j);
                 if (!S.containsKey(v)) {
@@ -91,11 +93,11 @@ public class GraphAlgorithms {
                     }
                 }
             }
-            if (u == null || minDist == Integer.MAX_VALUE) {
+            if (u == null || minDist == INFINITY) {
             break; 
             }
             S.put(u, true);
-            DynamicArray<V> neighbors = graph.getAdjacent(u);
+            DynamicArray<V> neighbors = graph.getArrayAdjacent(u);
             for (int j = 0; j < neighbors.getSize(); j++) {
                 V v = neighbors.get(j);
                 int weight = graph.getEdgeWeight(u, v);

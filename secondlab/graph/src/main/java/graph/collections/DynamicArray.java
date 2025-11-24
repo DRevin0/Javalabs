@@ -1,10 +1,13 @@
 package collections;
 
 public class DynamicArray<T>{
+    private static final int RESIZE_FACTOR = 2;
+
     private int size;
     private int capacity;
     private T[] array;
 
+    @SuppressWarnings("unchecked")
     public DynamicArray(int initialCapacity){
         this.capacity = initialCapacity;
         this.size = 0;
@@ -69,9 +72,10 @@ public class DynamicArray<T>{
         return array[0];
     }
 
+    @SuppressWarnings("unchecked")
     public void add(T element){
         if(size == capacity){
-            T[] newArray = (T[]) new Object[capacity*2];
+            T[] newArray = (T[]) new Object[capacity*RESIZE_FACTOR];
             for(int i = 0;i<size;i++){
                 newArray[i] = array[i];
             }
@@ -81,12 +85,13 @@ public class DynamicArray<T>{
         size++;
     }
 
+    @SuppressWarnings("unchecked")
     public void add(int index, T element){
         if(index > size || index < 0){
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         if(size == capacity){
-            T[] newArray = (T[]) new Object[capacity*2];
+            T[] newArray = (T[]) new Object[capacity*RESIZE_FACTOR];
             for(int i = 0;i<size;i++){
                 newArray[i] = array[i];
             }

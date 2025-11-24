@@ -2,7 +2,6 @@ import java.util.Scanner;
 import collections.*;
 import structures.*;
 import collections.customhashmap.*;
-import algorithms.*;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
@@ -119,9 +118,10 @@ public class Main {
         System.out.print("Введите вершину: ");
         String v = scanner.nextLine().trim();
         try {
-            DynamicArray<String> neighbors = graph.getAdjacent(v);
+            DynamicArray<String> neighbors = graph.getArrayAdjacent(v);
             System.out.println("Соседи " + v + ": " + toString(neighbors));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Ошибка: " + e.getMessage());
         }
     }
@@ -139,7 +139,8 @@ public class Main {
         System.out.print("Введите стартовую вершину: ");
         String start = scanner.nextLine().trim();
         try {
-            DynamicArray<String> result = GraphAlgorithms.dfs(graph, start);
+            graph.dfs(start);
+            DynamicArray<String> result = graph.getLastDfsResult();
             System.out.println("DFS (" + start + "): " + toString(result));
         } catch (Exception e) {
             System.out.println("Ошибка при выполнении DFS: " + e.getMessage());
@@ -150,7 +151,8 @@ public class Main {
         System.out.print("Введите стартовую вершину: ");
         String start = scanner.nextLine().trim();
         try {
-            DynamicArray<String> result = GraphAlgorithms.bfs(graph, start);
+            graph.bfs(start);
+            DynamicArray<String> result = graph.getLastBfsResult();
             System.out.println("BFS (" + start + "): " + toString(result));
         } catch (Exception e) {
             System.out.println("Ошибка при выполнении BFS: " + e.getMessage());
@@ -161,7 +163,8 @@ public class Main {
         System.out.print("Введите стартовую вершину: ");
         String start = scanner.nextLine().trim();
         try {
-            CustomHashMap<String, Integer> dist = GraphAlgorithms.dijkstra(graph, start);
+            graph.dijkstra(start);
+            CustomHashMap<String, Integer> dist = graph.getLastDijkstraResult();
             System.out.println("Кратчайшие расстояния от " + start + ":");
             DynamicArray<String> keys = dist.keySet();
             for (int i = 0; i < keys.getSize(); i++) {
