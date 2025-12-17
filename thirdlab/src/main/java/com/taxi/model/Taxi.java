@@ -1,30 +1,42 @@
 package main.java.com.taxi.model;
 
-import main.java.com.taxi.dispather.Dispather;
-
+import main.java.com.taxi.dispatcher.Dispatcher;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Taxi implements Runnable {
     private final int id;
-    private Location currentLocation;
+    private final AtomicReference<Location> currentLocation;
     private final BlockingQueue<Order> orderQueue = new ArrayBlockingQueue<>(1);
-    private final ReentrantLock lock = new ReentrantLock();
-    private boolean isAvailable = true;
-    private final Dispather dispatcher;
+    private final ReentrantLock assignmentLock = new ReentrantLock();
+    private final AtomicBoolean isAvailable = new AtomicBoolean(true);
+    private volatile boolean shutdownRequested = false;
+    private final Dispatcher dispatcher;
+    
+    private static final Order SHUTDOWN_ORDER = new Order(
+        new Location(-1, -1), 
+        new Location(-1, -1), 
+        java.time.Instant.EPOCH, 
+        -1
+    );
 
-    public Taxi(int id, Location startLocation, Dispather dispatcher) {
+    public Taxi(int id, Location startLocation, Dispatcher dispatcher) {
         this.id = id;
-        this.currentLocation = startLocation;
+        this.currentLocation = new AtomicReference<>(startLocation);
         this.dispatcher = dispatcher;
     }
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!shutdownRequested) {
             try {
                 Order order = orderQueue.take();
+                if (order == SHUTDOWN_ORDER) {
+                    break;
+                }
                 processOrder(order);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -35,18 +47,25 @@ public class Taxi implements Runnable {
     }
 
     private void processOrder(Order order) {
-        double distanceToClient = currentLocation.distanceTo(order.getFrom());
-        log("Еду к клиенту " + order.getFrom() + " за " + (int) distanceToClient + " мс");
-        simulateTravel(distanceToClient);
-        currentLocation = order.getFrom();
+        if (order.getOrderId() == -1) {
+            return;
+        }
+        
+        Location pickup = order.getFrom();
+        Location destination = order.getTo();
 
-        double distanceToDestination = order.getFrom().distanceTo(order.getTo());
-        log("Перевожу до " + order.getTo() + " за " + (int) distanceToDestination + " мс");
+        double distanceToClient = currentLocation.get().distanceTo(pickup);
+        log(String.format("Еду к клиенту %s (расстояние: %.1f)", pickup, distanceToClient));
+        simulateTravel(distanceToClient);
+        currentLocation.set(pickup);
+
+        double distanceToDestination = pickup.distanceTo(destination);
+        log(String.format("Перевожу клиента до %s (расстояние: %.1f)", destination, distanceToDestination));
         simulateTravel(distanceToDestination);
-        currentLocation = order.getTo();
+        currentLocation.set(destination);
 
         log("Поездка завершена. Возвращаю такси в свободные");
-        setAvailable(true);
+        isAvailable.set(true);
         dispatcher.reportTripCompletion(this, order);
     }
 
@@ -59,46 +78,52 @@ public class Taxi implements Runnable {
     }
 
     public boolean assignOrder(Order order) {
-        lock.lock();
-        try {
-            if (!isAvailable) return false;
-            setAvailable(false);
-            orderQueue.offer(order);
+        if (isAvailable.compareAndSet(true, false)) {
+            boolean offered = orderQueue.offer(order);
+            if (!offered) {
+                isAvailable.set(true);
+                return false;
+            }
             return true;
-        } finally {
-            lock.unlock();
         }
+        return false;
     }
-
-    private void setAvailable(boolean available) {
-        lock.lock();
-        try {
-            this.isAvailable = available;
-        } finally {
-            lock.unlock();
+    
+    public boolean tryAcquireForAssignment() {
+        if (assignmentLock.tryLock()) {
+            if (isAvailable.get()) {
+                return true;
+            } else {
+                assignmentLock.unlock();
+            }
+        }
+        return false;
+    }
+    
+    public void releaseFromAssignment() {
+        if (assignmentLock.isHeldByCurrentThread()) {
+            assignmentLock.unlock();
         }
     }
 
     public boolean isAvailable() {
-        lock.lock();
-        try {
-            return isAvailable;
-        } finally {
-            lock.unlock();
-        }
+        return isAvailable.get();
     }
 
     public Location getCurrentLocation() {
-        lock.lock();
-        try {
-            return currentLocation;
-        } finally {
-            lock.unlock();
-        }
+        return currentLocation.get();
     }
 
     public int getId() {
         return id;
+    }
+
+    public void shutdown() {
+        shutdownRequested = true;
+        try {
+            orderQueue.offer(SHUTDOWN_ORDER);
+        } catch (Exception e) {
+        }
     }
 
     private void log(String message) {
