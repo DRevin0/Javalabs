@@ -147,7 +147,7 @@ public class Dispatcher implements Runnable {
         System.out.printf("Обработано заказов: %d%n", completedOrders.get());
         System.out.printf("В очереди: %d%n", orderQueue.size());
         
-        System.out.println("\n🚕 Статус такси:");
+        System.out.println("\n Статус такси:");
         for (Taxi taxi : taxis) {
             System.out.printf("  • Такси %d - %s%n", 
                 taxi.getId(), 
